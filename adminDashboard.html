@@ -24,6 +24,38 @@
 </div>
 </div>
 
+  <div class="analytics" id="analyticsPanel">
+    <div class="metric">
+      <div class="label">Total Orders</div>
+      <div class="value" id="m-total">--</div>
+    </div>
+    <div class="metric">
+      <div class="label">Paid Orders</div>
+      <div class="value" id="m-paid">--</div>
+    </div>
+    <div class="metric">
+      <div class="label">Pending Orders</div>
+      <div class="value" id="m-pending">--</div>
+    </div>
+    <div class="metric">
+      <div class="label">Revenue (Rs)</div>
+      <div class="value" id="m-revenue">--</div>
+    </div>
+    <div class="metric">
+      <div class="label">Avg Ticket</div>
+      <div class="value" id="m-avg">--</div>
+    </div>
+    <div class="metric wide">
+      <div class="label">Top Products</div>
+      <ul id="top-products"></ul>
+    </div>
+    <div class="metric wide info" id="auth-hint" style="display:none">
+      <div>Login required</div>
+      <p>Please sign in on the admin login page to view analytics.</p>
+      <button onclick="window.location.href='adminAuth.html'" class="btn">Go to login</button>
+    </div>
+  </div>
+
   <div class="dashboard-container">
     <table id="productTable">
       <thead>

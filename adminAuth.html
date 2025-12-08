@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Access</title>
+  <link rel="stylesheet" href="adminAuth.css" />
+</head>
+<body>
+  <div class="auth-shell">
+    <div class="panel">
+      <div class="panel-header">
+        <h1>Admin Login</h1>
+        <p>Authenticate to view analytics and manage products.</p>
+      </div>
+
+      <form id="loginForm" class="stack">
+        <label>
+          Username
+          <input type="text" id="username" autocomplete="username" required />
+        </label>
+        <label>
+          Password
+          <input type="password" id="password" autocomplete="current-password" required />
+        </label>
+        <button type="submit" class="primary">Sign in</button>
+        <div id="loginStatus" class="status"></div>
+      </form>
+
+      <div class="divider">or</div>
+
+      <div class="panel-sub">
+        <h3>Register / Default Admin</h3>
+        <p class="muted">
+          Admin accounts are managed by the backend (env vars ADMIN_USERNAME / ADMIN_PASSWORD).
+          Update those values on the server, then use them to log in here.
+        </p>
+        <div class="info-block">
+          <div>Default credentials</div>
+          <code>admin / changeme123</code>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="ghost" onclick="window.location.href='index.html'">Back to kiosk</button>
+        <button class="ghost" onclick="window.location.href='adminDashboard.html'">Skip to dashboard</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="adminAuth.js"></script>
+</body>
+</html>
+

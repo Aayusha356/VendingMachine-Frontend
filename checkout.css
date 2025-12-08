@@ -1,8 +1,11 @@
 body {
-  font-family: Arial, sans-serif;
-  background: #f7f7f7;
+  font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  background: radial-gradient(circle at 20% 20%, rgba(242,91,60,0.12), transparent 26%),
+              radial-gradient(circle at 80% 10%, rgba(14,165,233,0.18), transparent 28%),
+              #0f172a;
+  color: #e5e7eb;
   margin: 0;
-  padding: 0;
+  min-height: 100vh;
 }
 
 .back-btn {
@@ -11,64 +14,71 @@ body {
   left: 15px;
   font-size: 20px;
   cursor: pointer;
-  color: #333;
+  color: #e5e7eb;
 }
 
 .home-btn {
   position: absolute;
   top: 15px;
-  right: 40px;
-  background: #ff6600;
+  right: 20px;
+  background: #f25b3c;
   color: white;
-  border: none;
+  border: 1px solid rgba(255,255,255,0.1);
   padding: 10px 14px;
-  border-radius: 6px;
+  border-radius: 10px;
   cursor: pointer;
   font-size: 14px;
+  transition: box-shadow 0.2s ease, transform 0.1s ease;
 }
 
 .home-btn:hover {
-  background: #e05500;
+  box-shadow: 0 12px 32px rgba(242,91,60,0.35);
 }
 
 .container {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
+  padding: 20px;
 }
 
 .qr-box {
-  background: #fff;
-  padding: 20px 30px;
-  border-radius: 12px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  background: rgba(11,16,32,0.9);
+  padding: 22px 26px;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.35);
   text-align: center;
-  width: 350px;
+  width: min(420px, 100%);
+  border: 1px solid rgba(255,255,255,0.08);
 }
 
 .qr-box p {
   margin: 10px 0;
-  color: #444;
+  color: #cbd5e1;
 }
 
 .qr-box .logo {
   width: 200px;
-  margin: 0px 0;
+  margin: 4px 0 10px;
 }
 
 .qr-box .amount {
-  font-size: 20px;
-  font-weight: bold;
+  font-size: 22px;
+  font-weight: 800;
   margin: 10px 0;
-  color: #28a745;
+  color: #fcdcd1;
 }
 
 .qr-box .qr img {
   margin-top: 15px;
-  border: 2px solid #ddd;
-  border-radius: 10px;
-  padding: 5px;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px;
+  padding: 8px;
+  background: rgba(255,255,255,0.04);
+  width: 220px;
+  height: 220px;
+  object-fit: contain;
 }
 
 .pill {
@@ -86,34 +96,37 @@ body {
 .inline-alert {
   margin: 10px 0;
   padding: 10px 12px;
-  background: #fef2f2;
-  color: #b91c1c;
+  background: rgba(248,113,113,0.1);
+  color: #fecdd3;
   border-radius: 8px;
   font-size: 13px;
-  border: 1px solid #fecdd3;
+  border: 1px solid rgba(248,113,113,0.4);
 }
 
 /* Responsive adjustments */
-@media (max-width: 600px) {
+@media (max-width: 640px) {
   .home-btn {
-    top: 10px;
-    right: 10px;
-    padding: 10px 15px;
-    font-size: 12px;
+    top: 12px;
+    right: 12px;
+    padding: 10px 12px;
+    font-size: 13px;
   }
 
   .qr-box {
-    width: 70%; /* make it shrink on smaller screens */
-    padding: 15px 20px;
-    margin-top: 30px; /* add space above the box */
-}
+    padding: 18px 18px;
+  }
 
   .qr-box .logo {
-    width: 150px; /* reduce logo size */
+    width: 160px;
   }
 
   .qr-box .amount {
-    font-size: 18px; /* adjust font size */
+    font-size: 20px;
+  }
+
+  .qr-box .qr img {
+    width: 190px;
+    height: 190px;
   }
 }
 /* SUCCESS OVERLAY */
@@ -132,12 +145,14 @@ body {
 
 /* SUCCESS CARD */
 .success-card {
-  background: white;
+  background: rgba(11,16,32,0.95);
   width: 320px;
   padding: 25px;
   text-align: center;
   border-radius: 18px;
   animation: pop 0.4s ease;
+  border: 1px solid rgba(255,255,255,0.08);
+  color: #e5e7eb;
 }
 
 .success-gif {
@@ -151,18 +166,23 @@ body {
 }
 
 .btn-home {
-  background: #28a745;
+  background: #16a34a;
   color: white;
   border: none;
   padding: 10px 18px;
   margin-top: 15px;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
   font-size: 16px;
+  transition: box-shadow 0.2s ease, transform 0.1s ease;
 }
 
 .btn-home:hover {
-  background: #218838;
+  box-shadow: 0 12px 32px rgba(22,163,74,0.35);
+}
+
+.btn-home:active {
+  transform: translateY(1px);
 }
 
 @keyframes pop {

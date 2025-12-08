@@ -104,7 +104,7 @@ function showNotification(message) {
 }
 
 function openAdmin() {
-  window.open("adminDashboard.html", "_blank");
+  window.open("adminAuth.html", "_blank");
 }
 
 document.addEventListener("keydown", (e) => {
