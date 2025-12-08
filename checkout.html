@@ -3,56 +3,44 @@
 <head>
   <meta charset="UTF-8">
   <title>Checkout</title>
+  <link rel="stylesheet" href="checkout.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="style.css">
-  </head>
+</head>
 <body>
+  <!-- Back & Home buttons -->
   <div class="back-btn" onclick="history.back()">
     <i class="fas fa-arrow-left"></i>
   </div>
-
   <button class="home-btn" onclick="window.location.href='index.html'">Home</button>
 
+  <!-- Checkout Container -->
   <div class="container">
     <div class="qr-box">
       <p>Order Id: <span id="order-id"></span></p>
       <p>We Accept</p>
-      <img src="photos/phonepay.png" class="logo" alt="TonePay Logo">
+      <img src="photos/fonepayy.png" class="logo" alt="fonePay Logo">
 
       <div class="amount" id="amount">Nrs. 0</div>
 
       <p>Scan the QR to pay. Dispense will start automatically after successful payment.</p>
-      <p>Time remaining: <span id="timer">2:00</span></p>
 
       <div class="qr">
-        <img src="photos/qr-placeholder.png" width="200" alt="QR Code">
+        <img id="qr-img" src="photos/qr-placeholder.png" width="200" alt="QR Code">
       </div>
     </div>
+
+    <!-- SUCCESS SCREEN -->
+<div id="success-screen" class="success-overlay">
+    <div class="success-card">
+        <img src="photos/sucessgif.gif" class="success-gif" alt="Success">
+        <h2>Payment Successful!</h2>
+        <p>Thank you! Dispensing will begin shortly.</p>
+        <button onclick="goHome()" class="btn-home">Return Home</button>
+    </div>
+</div>
+
   </div>
-
-  <script>
-    // Generate a fake order ID
-    document.getElementById("order-id").textContent = Date.now();
-
-    // Get cart total from localStorage (for demo)
-    const cart = JSON.parse(localStorage.getItem("vending-cart")) || [];
-    const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
-    document.getElementById("amount").textContent = `Nrs. ${total}`;
-
-    // Timer countdown 2:00 mins
-    let time = 120;
-    const timerEl = document.getElementById("timer");
-    const interval = setInterval(() => {
-      const mins = Math.floor(time / 60);
-      const secs = time % 60;
-      timerEl.textContent = `${mins}:${secs < 10 ? '0' + secs : secs}`;
-      time--;
-      if (time < 0) {
-        clearInterval(interval);
-        timerEl.textContent = "Expired";
-        // Handle timeout (maybe redirect or disable QR)
-      }
-    }, 1000);
-  </script>
+  <script src="checkout.js"></script>
 </body>
 </html>
+

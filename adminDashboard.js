@@ -29,24 +29,30 @@
       }
     }
 
-    function editProduct(id) {
-      // Redirect to edit page or open modal
-      alert("Edit product: " + id);
-    }
 
-    function deleteProduct(id) {
-      if (confirm("Are you sure you want to delete this product?")) {
-        fetch(`${BASE_URL}/products/${id}`, {
-          method: 'DELETE'
-        }).then(() => {
-          alert("Deleted!");
-          loadProducts();
-        }).catch(err => {
-          alert("Failed to delete");
-          console.error(err);
-        });
-      }
+    // Go to Edit Product page with ID in URL
+    function editProduct(id) {
+  window.location.href = `editProduct.html?id=${id}`;
+}
+
+// Delete product
+    async function deleteProduct(id) {
+  if (!confirm("Are you sure you want to delete this product?")) return;
+
+  try {
+    const res = await fetch(`${BASE_URL}/products/${id}`, { method: 'DELETE' });
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(errorData.detail || "Failed to delete product");
     }
+    alert("✅ Product deleted successfully!");
+    loadProducts();  // Refresh product list
+  } catch (error) {
+    alert("❌ Error deleting product: " + error.message);
+    console.error(error);
+  }
+}
+
 
     // Load on page load
     loadProducts();
@@ -55,6 +61,4 @@
     window.open('admin.html', '_blank');
 }
 
-function editProduct() {
-    window.open('editProduct.html', '_blank');
-}
+
