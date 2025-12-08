@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Product Dashboard</title>
   <link rel="stylesheet" href="adminDashboard.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
      <div class="buttons">
@@ -21,6 +22,7 @@
 
   <div class="add-product-container">
   <button class="add-product-btn" onclick="addProduct()">+ Add Product</button>
+  <button class="logout-btn" onclick="logout()">Logout</button>
 </div>
 </div>
 
@@ -45,6 +47,34 @@
       <div class="label">Avg Ticket</div>
       <div class="value" id="m-avg">--</div>
     </div>
+    <div class="metric">
+      <div class="label">Trend Slope</div>
+      <div class="value" id="m-slope">--</div>
+    </div>
+    <div class="metric">
+      <div class="label">R²</div>
+      <div class="value" id="m-r2">--</div>
+    </div>
+    <div class="metric">
+      <div class="label">Last 7d</div>
+      <div class="value" id="m-last7">--</div>
+    </div>
+    <div class="metric">
+      <div class="label">Last 30d</div>
+      <div class="value" id="m-last30">--</div>
+    </div>
+    <div class="metric">
+      <div class="label">MoM Growth</div>
+      <div class="value" id="m-mom">--</div>
+    </div>
+    <div class="metric">
+      <div class="label">Next Day</div>
+      <div class="value" id="m-next">--</div>
+    </div>
+    <div class="metric">
+      <div class="label">Next Month</div>
+      <div class="value" id="m-nextmonth">--</div>
+    </div>
     <div class="metric wide">
       <div class="label">Top Products</div>
       <ul id="top-products"></ul>
@@ -53,6 +83,43 @@
       <div>Login required</div>
       <p>Please sign in on the admin login page to view analytics.</p>
       <button onclick="window.location.href='adminAuth.html'" class="btn">Go to login</button>
+    </div>
+  </div>
+
+  <div class="chart-grid">
+    <div class="chart-card">
+      <div class="label">Revenue trend (paid)</div>
+      <canvas id="revChart"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="label">Category share</div>
+      <canvas id="catChart"></canvas>
+    </div>
+    <div class="chart-card wide">
+      <div class="label">Top products revenue</div>
+      <canvas id="topChart"></canvas>
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <button class="nav-btn" onclick="showMoreAnalytics()">View Advanced Analytics ↓</button>
+  </div>
+
+  <div id="advancedSection" class="advanced-section">
+    <h2>Advanced Analytics</h2>
+    <div class="chart-grid">
+      <div class="chart-card">
+        <div class="label">7-Day Forecast</div>
+        <canvas id="forecastChart"></canvas>
+      </div>
+      <div class="chart-card wide">
+        <div class="label">Monthly Sales</div>
+        <canvas id="monthlyChart"></canvas>
+      </div>
+      <div class="chart-card wide">
+        <div class="label">Hourly Sales Pattern</div>
+        <canvas id="hourlyChart"></canvas>
+      </div>
     </div>
   </div>
 
