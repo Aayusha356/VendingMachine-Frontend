@@ -1,67 +1,96 @@
 let products = [];
 const BASE_URL = "http://127.0.0.1:8000";
-const cartKey = "vendingCart";
 
-async function fetchProducts(category = "chocolate") {
-  try {
-    const res = await fetch(`${BASE_URL}/products`);
-    const data = await res.json();
-
-    // Update image paths to full URL
-    products = data.map(p => ({
-      ...p,
-      image: `${BASE_URL}/${p.image}` // assuming `p.image` is just filename
-    }));
-
-    loadProducts(category);
-  } catch (err) {
-    console.error("Error fetching products:", err);
-  }
-}
-
-function loadProducts(category = "chocolate") {
+async function fetchProducts() {
   const grid = document.getElementById("productGrid");
   grid.innerHTML = "";
 
-  const filtered = products.filter(p => p.category === category);
+  try {
+    const res = await fetch(`${BASE_URL}/products/`);
+    if (!res.ok) throw new Error("Unable to fetch products");
+    const data = await res.json();
 
-  filtered.forEach(product => {
+    products = data.map((p) => ({
+      ...p,
+      image: `${BASE_URL}/photos/${p.image}`,
+    }));
+
+    renderCategories();
+    loadProducts("all");
+    showNotification("Products synced from backend");
+  } catch (err) {
+    console.error("Error fetching products:", err);
+    grid.innerHTML = "<p style='color:#fca5a5'>Failed to load products.</p>";
+  }
+}
+
+function renderCategories() {
+  const tabs = document.getElementById("categoryTabs");
+  const uniqueCategories = ["all", ...new Set(products.map((p) => p.category || "others"))];
+
+  tabs.innerHTML = "";
+  uniqueCategories.forEach((category, index) => {
+    const btn = document.createElement("button");
+    btn.textContent = category === "all" ? "All" : category.charAt(0).toUpperCase() + category.slice(1);
+    btn.className = index === 0 ? "active" : "";
+    btn.onclick = () => filterCategory(category, btn);
+    tabs.appendChild(btn);
+  });
+}
+
+function loadProducts(category = "all") {
+  const grid = document.getElementById("productGrid");
+  grid.innerHTML = "";
+
+  const filtered =
+    category === "all"
+      ? products
+      : products.filter((p) => (p.category || "").toLowerCase() === category.toLowerCase());
+
+  if (!filtered.length) {
+    grid.innerHTML = "<p style='color:#9ca3af'>No products in this category yet.</p>";
+    return;
+  }
+
+  filtered.forEach((product) => {
     const card = document.createElement("div");
     card.className = "product-card";
     card.innerHTML = `
-      <img src="${product.image}" alt="${product.name}">
+      <div class="img-wrap">
+        <img src="${product.image}" alt="${product.name}">
+      </div>
       <div class="title">${product.name}</div>
-      <div class="price">Rs. ${product.price}</div>
-      <button class="add-cart" onclick="addToCart(${product.id})">🛒 Add to Cart</button>
+      <div class="meta">
+        <span class="pill">${product.category || "item"}</span>
+        <span class="price">Rs. ${product.price}</span>
+      </div>
+      <div class="qty-wrap">
+        <label for="qty-${product.id}">Qty</label>
+        <input id="qty-${product.id}" class="qty-input" type="number" min="1" max="50" value="1" />
+      </div>
+      <button class="primary-btn" aria-label="Buy ${product.name}">
+        <i class="fas fa-qrcode"></i> Buy Now
+      </button>
     `;
+    const buyBtn = card.querySelector("button");
+    const qtyInput = card.querySelector(".qty-input");
+    buyBtn.addEventListener("click", () => {
+      const qtyVal = Math.min(Math.max(Number(qtyInput.value) || 1, 1), 50);
+      qtyInput.value = qtyVal;
+      startCheckout(product.id, qtyVal);
+    });
     grid.appendChild(card);
   });
 }
 
-function addToCart(productId) {
-  const product = products.find(p => p.id === productId);
-  let cart = JSON.parse(localStorage.getItem(cartKey)) || [];
-
-  const existing = cart.find(item => item.id === productId);
-  if (existing) {
-    existing.qty += 1;
-  } else {
-    cart.push({ ...product, qty: 1 });
-  }
-
-  localStorage.setItem(cartKey, JSON.stringify(cart));
-  showNotification(`${product.name} added`);
-  updateCartCount();
-
-  setTimeout(() => {
-    window.location.href = "cart.html";
-  }, 1500);
+function filterCategory(category, btn) {
+  document.querySelectorAll("#categoryTabs button").forEach((b) => b.classList.remove("active"));
+  if (btn) btn.classList.add("active");
+  loadProducts(category);
 }
 
-function filterCategory(category) {
-  document.querySelectorAll(".tabs button").forEach(btn => btn.classList.remove("active"));
-  event.target.classList.add("active");
-  loadProducts(category);
+function startCheckout(productId, qty = 1) {
+  window.location.href = `checkout.html?productId=${productId}&qty=${qty}`;
 }
 
 function showNotification(message) {
@@ -71,95 +100,19 @@ function showNotification(message) {
 
   setTimeout(() => {
     notification.style.display = "none";
-  }, 2500);
-}
-
-function renderCart() {
-  const cart = JSON.parse(localStorage.getItem(cartKey)) || [];
-  const container = document.getElementById("cartItems");
-  const subtotalEl = document.getElementById("subtotal");
-
-  if (!container) return;
-
-  container.innerHTML = "";
-  let subtotal = 0;
-
-  cart.forEach((item, index) => {
-    subtotal += item.price * item.qty;
-
-    const el = document.createElement("div");
-    el.className = "cart-item";
-    el.innerHTML = `
-      <img src="${item.image}" alt="${item.name}" />
-      <div class="cart-info">
-        <div>${item.name}</div>
-        <div class="qty-controls">
-          <button onclick="updateQty(${index}, -1)">-</button>
-          <span>${item.qty}</span>
-          <button onclick="updateQty(${index}, 1)">+</button>
-        </div>
-      </div>
-      <div class="cart-price">Rs. ${item.price * item.qty}</div>
-      <button class="remove-btn" onclick="removeItem(${index})">🗑</button>
-    `;
-    container.appendChild(el);
-  });
-
-  subtotalEl.textContent = subtotal;
-}
-
-function updateQty(index, change) {
-  const cart = JSON.parse(localStorage.getItem(cartKey)) || [];
-  cart[index].qty += change;
-  if (cart[index].qty <= 0) cart.splice(index, 1);
-  localStorage.setItem(cartKey, JSON.stringify(cart));
-  renderCart();
-}
-
-function removeItem(index) {
-  const cart = JSON.parse(localStorage.getItem(cartKey)) || [];
-  cart.splice(index, 1);
-  localStorage.setItem(cartKey, JSON.stringify(cart));
-  renderCart();
-}
-
-function clearCart() {
-  localStorage.removeItem(cartKey);
-  renderCart();
-}
-
-function goToCart() {
-  window.location.href = "cart.html";
-}
-
-function goToCheckout() {
-  window.location.href = "checkout.html";
-}
-
-function updateCartCount() {
-  const cart = JSON.parse(localStorage.getItem(cartKey)) || [];
-  const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
-  const cartCountEl = document.getElementById("cartCount");
-  if (cartCountEl) {
-    cartCountEl.textContent = totalItems;
-  }
+  }, 2400);
 }
 
 function openAdmin() {
-  window.open('adminDashboard.html', '_blank');
+  window.open("adminDashboard.html", "_blank");
 }
 
-document.addEventListener('keydown', (e) => {
-  if (e.shiftKey && e.key === 'A') {
+document.addEventListener("keydown", (e) => {
+  if (e.shiftKey && e.key === "A") {
     openAdmin();
   }
 });
 
-// Initialize
 window.onload = () => {
-  if (window.location.pathname.includes("cart.html")) {
-    renderCart();
-  } else {
-    fetchProducts(); // fetch from backend on load
-  }
+  fetchProducts();
 };

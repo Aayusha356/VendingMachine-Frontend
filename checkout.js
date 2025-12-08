@@ -1,56 +1,56 @@
-const BASE_URL = "http://192.168.18.23:8000";
-const cartKey = "vendingCart";
+const BASE_URL = "http://127.0.0.1:8000";
 
-// Generate order ID automatically from backend
 let orderId = null;
+const params = new URLSearchParams(window.location.search);
+const productId = Number(params.get("productId"));
+const quantity = Number(params.get("qty") || 1);
 
-// Get cart and amount
-const cart = JSON.parse(localStorage.getItem(cartKey)) || [];
-const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
-document.getElementById("amount").textContent = `Nrs. ${total}`;
+async function initCheckout() {
+  if (!productId) {
+    showError("No product selected. Please start again.");
+    return;
+  }
 
-// Use first product name
-const productName = cart.length ? cart[0].name : "Unknown";
+  try {
+    const productRes = await fetch(`${BASE_URL}/products/${productId}`);
+    if (!productRes.ok) throw new Error("Unable to load product details");
+    const product = await productRes.json();
 
-async function createOrder() {
-  console.log("createOrder called");     // DEBUG
-  const res = await fetch(`${BASE_URL}/payment/create-order`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      amount: total,
-      product_name: productName
-    })
-  });
+    const qty = Number.isFinite(quantity) && quantity > 0 ? quantity : 1;
+    const total = Number(product.price) * qty;
+    document.getElementById("product-name").textContent = product.name;
+    document.getElementById("amount").textContent = `Nrs. ${total}`;
+    document.getElementById("qty-label").textContent = `Qty: ${qty}`;
 
-  console.log("Order created response:", res.status); // DEBUG
+    const orderRes = await fetch(`${BASE_URL}/payment/create-order`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ product_id: productId, quantity: qty }),
+    });
 
-  const order = await res.json();
+    if (!orderRes.ok) {
+      const err = await orderRes.json().catch(() => ({}));
+      throw new Error(err.detail || "Could not create order");
+    }
 
-  console.log("Order data:", order);      // DEBUG
-  orderId = order.id;
+    const order = await orderRes.json();
+    orderId = order.id;
+    document.getElementById("order-id").textContent = orderId;
 
-  // Show on UI
-  document.getElementById("order-id").textContent = orderId;
-
-  generateQRCode(orderId);
-  startPolling();
+    generateQRCode(orderId);
+    startPolling();
+  } catch (error) {
+    console.error(error);
+    showError(error.message || "Something went wrong");
+  }
 }
 
 function generateQRCode(orderId) {
-  const qrData = `${BASE_URL}/payment/scan/${orderId}/${encodeURIComponent(productName)}`;
-
+  const qrData = `${BASE_URL}/payment/scan/${orderId}`;
   const qrImg = document.getElementById("qr-img");
-
-  console.log("QR data:", qrData);
-
   const finalURL = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(qrData)}`;
-
-  console.log("QR URL:", finalURL);
-
   qrImg.src = finalURL;
 }
-
 
 async function startPolling() {
   const interval = setInterval(async () => {
@@ -58,24 +58,21 @@ async function startPolling() {
     const data = await res.json();
 
     if (data.status === "paid") {
-    clearInterval(interval);
-
-    // Show success UI
-    document.getElementById("success-screen").style.display = "flex";
-
-    // Optional: Auto redirect after 5 sec
-    setTimeout(() => {
-        goHome();
-    }, 5000);
+      clearInterval(interval);
+      document.getElementById("success-screen").style.display = "flex";
+      setTimeout(() => goHome(), 5000);
+    }
+  }, 2000);
 }
 
-  }, 2000);
+function showError(message) {
+  const box = document.getElementById("message");
+  box.textContent = message;
+  box.style.display = "block";
 }
 
 function goHome() {
   window.location.href = "index.html";
 }
 
-
-// Run
-createOrder();
+initCheckout();

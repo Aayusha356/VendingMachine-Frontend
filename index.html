@@ -3,41 +3,43 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Vending Machine</title>
+<title>Vending Machine</title>
   <link rel="stylesheet" href="style.css"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 </head>
 <body>
   <header class="header">
-  <div class="brand">LphaVend</div>
-  <div class="machine-info">LphaVend Vending Machine - 6/10/2025 - 4:08 PM</div>
-  <div style="position: relative;">
-   <div class="cart-wrapper" onclick="goToCart()">
-  <i class="fas fa-shopping-cart cart-icon"></i>
-  <span class="cart-count" id="cartCount">0</span>
-</div>
-<div id="notification" class="notification">Item added</div>
+    <div class="brand">AlphaVend</div>
+    <div class="machine-info">
+      <span class="pill">Smart Vending</span>
+      <small>Pick. Scan. Enjoy.</small>
+    </div>
+    <button class="ghost-btn" onclick="openAdmin()">
+      <i class="fas fa-lock"></i>
+      Admin
+    </button>
+  </header>
 
-  </div>
-</header>
+  <section class="hero">
+    <div>
+      <p class="eyebrow">Live • Connected</p>
+      <h1>Tap a product to generate your payment QR.</h1>
+      <p class="subtext">No cart, no clutter—just choose and pay instantly.</p>
+    </div>
+    <div class="hero-status">
+      <span class="dot online"></span>
+      Backend online
+    </div>
+  </section>
 
-
-  <nav class="tabs">
-    <button onclick="filterCategory('chocolate')" class="active">Chocolate</button>
-    <button onclick="filterCategory('noodle')" >Noodle</button>
-    <button onclick="filterCategory('soap')">Soap</button>
-    <button onclick="filterCategory('juice')">Juice</button>
-    <button onclick="filterCategory('biscuit')">Biscuit</button>
-    <button onclick="filterCategory('others')">Others</button>
+  <nav class="tabs" id="categoryTabs">
+    <button class="active" onclick="filterCategory('all', this)">All</button>
   </nav>
 
-  <main class="product-grid" id="productGrid">
-    <!-- JavaScript will inject product cards here -->
-  </main>
+  <main class="product-grid" id="productGrid"></main>
 
-  <div id="notification" class="notification">Item added to cart</div>
-  
+  <div id="notification" class="notification"></div>
 
   <script src="script.js"></script>
 </body>

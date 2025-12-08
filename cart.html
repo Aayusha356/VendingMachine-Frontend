@@ -7,21 +7,15 @@
   <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-  <div class="cart-container">
+  <div class="cart-container" style="text-align:center">
     <header class="header">
-      <div class="brand">Shopping Cart</div>
-      <button class="clear-cart" onclick="clearCart()">Clear Cart</button>
+      <div class="brand">Cart removed</div>
     </header>
-
-    <main id="cartItems" class="cart-items"></main>
-
-    <div class="summary">
-      <div class="subtotal">Subtotal: Rs. <span id="subtotal">0</span></div>
-      <button class="checkout-btn" onclick="goToCheckout()">Proceed to Checkout</button>
-      <button class="continue-btn" onclick="window.location.href='index.html'">Continue Shopping</button>
-    </div>
+    <p style="margin:18px 0;color:#9ca3af">The cart flow has been replaced with direct purchase. Choose any product on the home screen to start an order.</p>
+    <button class="checkout-btn" onclick="window.location.href='index.html'">Go to products</button>
   </div>
-
-  <script src="script.js"></script>
+  <script>
+    window.location.replace('index.html');
+  </script>
 </body>
 </html>
