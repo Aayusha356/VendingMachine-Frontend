@@ -81,11 +81,11 @@ async function loadAnalytics() {
       headers: { Authorization: `Bearer ${token}` },
     });
 
-    if (res.status === 401) {
-      localStorage.removeItem(TOKEN_KEY);
-      window.location.href = "adminAuth.html";
-      return;
-    }
+   if (res.status === 401) {
+  localStorage.removeItem(TOKEN_KEY);   // token invalid
+  window.location.href = "adminAuth.html"; // redirect
+  return;
+}  
 
     const data = await res.json();
     mTotal.textContent = data.total_orders;

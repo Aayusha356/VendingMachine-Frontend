@@ -21,14 +21,15 @@ document.getElementById("productForm").addEventListener("submit", async function
     if (!imageRes.ok) throw new Error("Image upload failed.");
 
     const imageData = await imageRes.json();
-    const imagePath = imageData.file_location; // e.g., "photos/billing1.jpg"
+    const filename = imageData.filename; // "billing1.jpg"
+
 
     // 2. Now send product data
     const product = {
       name: document.getElementById("name").value.trim(),
       price: parseFloat(document.getElementById("price").value),
       category: document.getElementById("category").value.trim(),
-      image: imagePath // Pass only the path from backend
+      image: filename // Pass only the path from backend
     };
 
     const productRes = await fetch("http://127.0.0.1:8000/products/", {

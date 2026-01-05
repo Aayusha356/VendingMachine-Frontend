@@ -19,7 +19,7 @@ async function loadProduct() {
     document.getElementById("name").value = product.name;
     document.getElementById("price").value = product.price;
     document.getElementById("category").value = product.category;
-    document.getElementById("previewImage").src = `${BASE_URL}/${product.image}`;
+    document.getElementById("previewImage").src = `${BASE_URL}/photos/${product.image}`;
     console.log("Product image path:", product.image)
   } catch (err) {
     console.error(err);
@@ -47,7 +47,7 @@ document.getElementById("productForm").addEventListener("submit", async function
 
       if (!imageRes.ok) throw new Error("Image upload failed");
       const imageData = await imageRes.json();
-      imagePath = imageData.file_location;
+      const filename = imageData.filename; // "billing1.jpg"
     }
 
     // Prepare updated product data
@@ -55,7 +55,7 @@ document.getElementById("productForm").addEventListener("submit", async function
       name: document.getElementById("name").value.trim(),
       price: parseFloat(document.getElementById("price").value),
       category: document.getElementById("category").value.trim(),
-      image: imagePath || undefined
+      image: filename || undefined
     };
 
     // Send update request
