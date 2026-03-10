@@ -1,4 +1,4 @@
-const BASE_URL ="http://172.16.29.161:8000";
+const BASE_URL ="http://172.16.31.15:8000";
 
 let orderId = null;
 const params = new URLSearchParams(window.location.search);

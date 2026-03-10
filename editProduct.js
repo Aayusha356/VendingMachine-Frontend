@@ -4,6 +4,9 @@ const BASE_URL = "http://127.0.0.1:8000";
 const params = new URLSearchParams(window.location.search);
 const productId = params.get("id");
 
+// 1. Create a variable to hold the existing image name
+let currentImageName = "";
+
 if (!productId) {
   alert("❌ No product ID found.");
   window.location.href = "adminDashboard.html";
@@ -21,6 +24,7 @@ async function loadProduct() {
     document.getElementById("category").value = product.category;
     document.getElementById("previewImage").src = `${BASE_URL}/photos/${product.image}`;
     console.log("Product image path:", product.image)
+    currentImageName = product.image;
   } catch (err) {
     console.error(err);
     alert("❌ Error loading product details");
@@ -32,7 +36,7 @@ document.getElementById("productForm").addEventListener("submit", async function
   e.preventDefault();
 
   try {
-    let imagePath = null;
+    let filename = null;
     const imageFile = document.getElementById("imageFile").files[0];
 
     // Upload new image if selected
@@ -47,7 +51,7 @@ document.getElementById("productForm").addEventListener("submit", async function
 
       if (!imageRes.ok) throw new Error("Image upload failed");
       const imageData = await imageRes.json();
-      const filename = imageData.filename; // "billing1.jpg"
+       filename = imageData.filename; // "billing1.jpg"
     }
 
     // Prepare updated product data
@@ -55,7 +59,7 @@ document.getElementById("productForm").addEventListener("submit", async function
       name: document.getElementById("name").value.trim(),
       price: parseFloat(document.getElementById("price").value),
       category: document.getElementById("category").value.trim(),
-      image: filename || undefined
+      image: filename ? filename : currentImageName
     };
 
     // Send update request

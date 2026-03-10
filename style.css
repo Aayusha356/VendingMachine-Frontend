@@ -50,8 +50,9 @@ body {
 }
 
 .pill {
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   padding: 6px 10px;
   background: rgba(242,91,60,0.12);
@@ -296,4 +297,66 @@ body {
   .product-grid {
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   }
+
+  * ── Weather Banner ─────────────────────────────────────────────────────── */
+
+.weather-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  margin: 12px 0 4px;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  animation: slideDown 0.4s ease;
+}
+
+.weather-banner.hot {
+  background: linear-gradient(90deg, rgba(255,107,43,0.12), rgba(255,173,0,0.1));
+  color: #ffd580;
+  border: 1px solid rgba(255,107,43,0.25);
+  border-left: 3px solid #ff6b2b;
+}
+
+.weather-banner.cool {
+  background: linear-gradient(90deg, rgba(0,198,255,0.1), rgba(0,114,255,0.1));
+  color: #90d5ff;
+  border: 1px solid rgba(0,114,255,0.2);
+  border-left: 3px solid #0072ff;
+}
+
+.weather-banner .weather-icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.weather-banner .weather-icon img {
+  filter: drop-shadow(0 0 4px rgba(255,200,100,0.35));
+}
+
+.weather-banner .weather-text strong {
+  font-weight: 700;
+}
+
+/* Hot badge on juice category tab */
+.tabs button.tab-hot {
+  background: linear-gradient(135deg, #ff6b2b, #ffad00) !important;
+  border-color: transparent !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 16px rgba(255,107,43,0.4) !important;
+  animation: pulse-hot 1.8s ease-in-out infinite;
+}
+
+@keyframes pulse-hot {
+  0%, 100% { box-shadow: 0 4px 16px rgba(255,107,43,0.4); }
+  50%       { box-shadow: 0 4px 26px rgba(255,107,43,0.7); }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 }
