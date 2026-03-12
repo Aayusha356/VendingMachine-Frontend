@@ -188,7 +188,7 @@ function loadProducts(category = "all") {
       </div>
       <div class="qty-wrap">
         <label for="qty-${product.id}">Qty</label>
-        <input id="qty-${product.id}" class="qty-input" type="number" min="1" max="50" value="1" />
+        <input type="number" id="qty-${product.id}" class="qty-input" value="1" min="1" max="50">
       </div>
       <button class="primary-btn" aria-label="Buy ${product.name}">
         <i class="fas fa-qrcode"></i> Buy Now

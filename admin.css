@@ -1,9 +1,9 @@
 body {
   font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
-  background: radial-gradient(circle at 20% 20%, rgba(242,91,60,0.12), transparent 26%),
-              radial-gradient(circle at 80% 10%, rgba(14,165,233,0.18), transparent 28%),
-              #0f172a;
-  color: #e5e7eb;
+  background: radial-gradient(circle at 20% 20%, rgba(242,91,60,0.08), transparent 26%),
+              radial-gradient(circle at 80% 10%, rgba(14,165,233,0.08), transparent 28%),
+              #ffffff;
+  color: #1f2937;
   margin: 0;
   padding: 32px 16px;
 }
@@ -11,16 +11,16 @@ body {
 .admin-container {
   max-width: 520px;
   margin: auto;
-  background: rgba(11,16,32,0.9);
+  background: rgba(255,255,255,0.95);
   padding: 28px 30px;
   border-radius: 16px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
-  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0,0,0,0.1);
 }
 
 h1 {
   text-align: center;
-  color: #fcdcd1;
+  color: #f25b3c;
   margin-bottom: 22px;
 }
 
@@ -32,17 +32,17 @@ label {
   display: block;
   font-weight: 600;
   margin-bottom: 6px;
-  color: #cbd5e1;
+  color: #374151;
 }
 
 input, select {
   width: 100%;
   padding: 12px;
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid rgba(0,0,0,0.15);
   border-radius: 12px;
   font-size: 14px;
-  background: rgba(255,255,255,0.04);
-  color: #fff;
+  background: rgba(255,255,255,0.6);
+  color: #1f2937;
 }
 
 input:focus, select:focus {
@@ -82,7 +82,7 @@ input:focus, select:focus {
   justify-content: flex-end;
 }
 .back-btn {
-  background-color: #334155;
+  background-color: #f25b3c;
   color: white;
   padding: 8px 15px;
   border: none;
@@ -94,7 +94,7 @@ input:focus, select:focus {
 }
 
 .back-btn:hover {
-  background-color:  #475569;
+  background-color: #ff734e;
 }
 
 @media (max-width: 560px) {

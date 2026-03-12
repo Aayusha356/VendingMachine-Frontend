@@ -173,7 +173,7 @@ function renderRevenueChart(rows) {
         {
           label: "Revenue (Rs)",
           data: values,
-          borderColor: "#f25b3c",
+          borderColor: "#404040",
           backgroundColor: "rgba(242,91,60,0.18)",
           tension: 0.3,
           fill: true,
@@ -184,7 +184,7 @@ function renderRevenueChart(rows) {
       plugins: {
         legend: {
           display: true,
-          labels: { color: "#cbd5e1" },
+          labels: { color: "#1f2937" },
         },
         tooltip: {
           callbacks: {
@@ -194,12 +194,12 @@ function renderRevenueChart(rows) {
       },
       scales: {
         x: {
-          ticks: { color: "#cbd5e1" },
-          title: { display: true, text: "Date", color: "#cbd5e1" },
+          ticks: { color: "#1f2937" },
+          title: { display: true, text: "Date", color: "#1f2937" },
         },
         y: {
-          ticks: { color: "#cbd5e1" },
-          title: { display: true, text: "Revenue (Rs)", color: "#cbd5e1" },
+          ticks: { color: "#1f2937" },
+          title: { display: true, text: "Revenue (Rs)", color: "#1f2937" },
         },
       },
     },
@@ -231,7 +231,7 @@ function renderCategoryChart(rows) {
         legend: {
           display: true,
           position: "right",
-          labels: { color: "#cbd5e1" },
+          labels: { color: "#1f2937" },
         },
         tooltip: {
           callbacks: {
@@ -260,7 +260,7 @@ function renderTopProductsChart(rows) {
           label: "Revenue (Rs)",
           data: values,
           backgroundColor: "rgba(242,91,60,0.6)",
-          borderColor: "#f25b3c",
+          borderColor: "#404040",
           borderWidth: 1,
         },
       ],
@@ -269,7 +269,7 @@ function renderTopProductsChart(rows) {
       plugins: {
         legend: {
           display: true,
-          labels: { color: "#cbd5e1" },
+          labels: { color: "#1f2937" },
         },
         tooltip: {
           callbacks: {
@@ -279,12 +279,12 @@ function renderTopProductsChart(rows) {
       },
       scales: {
         x: {
-          ticks: { color: "#cbd5e1" },
-          title: { display: true, text: "Product", color: "#cbd5e1" },
+          ticks: { color: "#1f2937" },
+          title: { display: true, text: "Product", color: "#1f2937" },
         },
         y: {
-          ticks: { color: "#cbd5e1" },
-          title: { display: true, text: "Revenue (Rs)", color: "#cbd5e1" },
+          ticks: { color: "#1f2937" },
+          title: { display: true, text: "Revenue (Rs)", color: "#1f2937" },
         },
       },
     },
@@ -311,7 +311,7 @@ function renderForecastChart(rows) {
           label: "Forecast (Rs)",
           data: values,
           borderDash: [5, 5],
-          borderColor: "#0ea5e9",
+          borderColor: "#404040",
           backgroundColor: "rgba(14,165,233,0.18)",
           tension: 0.3,
           fill: true,
@@ -322,7 +322,7 @@ function renderForecastChart(rows) {
       plugins: {
         legend: {
           display: true,
-          labels: { color: "#cbd5e1" },
+          labels: { color: "#1f2937" },
         },
         tooltip: {
           callbacks: {
@@ -332,12 +332,12 @@ function renderForecastChart(rows) {
       },
       scales: {
         x: {
-          ticks: { color: "#cbd5e1" },
-          title: { display: true, text: "Date", color: "#cbd5e1" },
+          ticks: { color: "#1f2937" },
+          title: { display: true, text: "Date", color: "#1f2937" },
         },
         y: {
-          ticks: { color: "#cbd5e1" },
-          title: { display: true, text: "Revenue (Rs)", color: "#cbd5e1" },
+          ticks: { color: "#1f2937" },
+          title: { display: true, text: "Forecast (Rs)", color: "#1f2937" },
         },
       },
     },
@@ -361,7 +361,7 @@ function renderMonthlyChart(rows) {
           label: "Revenue (Rs)",
           data: values,
           backgroundColor: "rgba(34,197,94,0.6)",
-          borderColor: "#22c55e",
+          borderColor: "#404040",
           borderWidth: 1,
         },
       ],
@@ -370,7 +370,7 @@ function renderMonthlyChart(rows) {
       plugins: {
         legend: {
           display: true,
-          labels: { color: "#cbd5e1" },
+          labels: { color: "#1f2937" },
         },
         tooltip: {
           callbacks: {
@@ -380,12 +380,12 @@ function renderMonthlyChart(rows) {
       },
       scales: {
         x: {
-          ticks: { color: "#cbd5e1" },
-          title: { display: true, text: "Month", color: "#cbd5e1" },
+          ticks: { color: "#1f2937" },
+          title: { display: true, text: "Month", color: "#1f2937" },
         },
         y: {
-          ticks: { color: "#cbd5e1" },
-          title: { display: true, text: "Revenue (Rs)", color: "#cbd5e1" },
+          ticks: { color: "#1f2937" },
+          title: { display: true, text: "Revenue (Rs)", color: "#1f2937" },
         },
       },
     },
@@ -408,7 +408,7 @@ function renderHourlyChart(rows) {
         {
           label: "Revenue (Rs)",
           data: values,
-          borderColor: "#a855f7",
+          borderColor: "#404040",
           backgroundColor: "rgba(168,85,247,0.18)",
           tension: 0.3,
           fill: true,
@@ -419,7 +419,7 @@ function renderHourlyChart(rows) {
       plugins: {
         legend: {
           display: true,
-          labels: { color: "#cbd5e1" },
+          labels: { color: "#1f2937" },
         },
         tooltip: {
           callbacks: {
@@ -429,12 +429,12 @@ function renderHourlyChart(rows) {
       },
       scales: {
         x: {
-          ticks: { color: "#cbd5e1" },
-          title: { display: true, text: "Hour of Day", color: "#cbd5e1" },
+          ticks: { color: "#1f2937" },
+          title: { display: true, text: "Hour of Day", color: "#1f2937" },
         },
         y: {
-          ticks: { color: "#cbd5e1" },
-          title: { display: true, text: "Revenue (Rs)", color: "#cbd5e1" },
+          ticks: { color: "#1f2937" },
+          title: { display: true, text: "Revenue (Rs)", color: "#1f2937" },
         },
       },
     },
