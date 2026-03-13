@@ -119,9 +119,102 @@ async function loadAnalytics() {
   }
 }
 
-async function loadAdvancedAnalytics() {
+// ── Advanced analytics cache ───────────────────────────────────────────────
+const ADV_CACHE_KEY      = "vm_advanced_analytics_cache";
+const ADV_CACHE_DURATION = 6 * 60 * 60 * 1000; // 6 hours in ms
+
+function _getCached() {
+  try {
+    const raw = localStorage.getItem(ADV_CACHE_KEY);
+    if (!raw) return null;
+    const { data, timestamp } = JSON.parse(raw);
+    if (Date.now() - timestamp > ADV_CACHE_DURATION) {
+      localStorage.removeItem(ADV_CACHE_KEY);
+      return null;
+    }
+    // Discard cache entries from old schema that are missing regression fields
+    if (!Array.isArray(data.coefficients) || !Array.isArray(data.feature_names)) {
+      localStorage.removeItem(ADV_CACHE_KEY);
+      return null;
+    }
+    return { data, timestamp };
+  } catch { return null; }
+}
+
+function _setCache(data) {
+  try {
+    localStorage.setItem(ADV_CACHE_KEY, JSON.stringify({ data, timestamp: Date.now() }));
+  } catch {}
+}
+
+function _setCacheStatus(type, text) {
+  const el = document.getElementById("cacheStatus");
+  if (!el) return;
+  el.className = `cache-status ${type}`;
+  el.textContent = text;
+}
+
+function _timeAgo(timestamp) {
+  const mins = Math.round((Date.now() - timestamp) / 60000);
+  if (mins < 1)  return "just now";
+  if (mins < 60) return `${mins} min${mins > 1 ? "s" : ""} ago`;
+  const hrs = Math.round(mins / 60);
+  return `${hrs} hr${hrs > 1 ? "s" : ""} ago`;
+}
+
+function _applyAdvancedData(data, fromCache, cacheTimestamp) {
+  // Regression panel first — isolated so KPI errors never block it
+  try { renderRegressionPanel(data); } catch (e) { console.error("renderRegressionPanel:", e); }
+
+  // ── KPI cards (safe fallbacks so undefined never throws) ───────────────
+  try {
+    const n = data.sample_count ?? 0;
+    if (mSlope)     mSlope.textContent     = n < 2 ? "--" : (data.slope ?? 0).toFixed(4);
+    if (mR2)        mR2.textContent        = n < 2 ? "--" : (data.r2   ?? 0).toFixed(4);
+    if (mLast7)     mLast7.textContent     = (data.last_7d_revenue  ?? 0).toFixed(2);
+    if (mLast30)    mLast30.textContent    = (data.last_30d_revenue ?? 0).toFixed(2);
+    if (mMoM)       mMoM.textContent       = `${(data.mom_growth_pct ?? 0).toFixed(2)}%`;
+    const f7 = data.forecast_next_7 || [];
+    if (mNext)      mNext.textContent      = f7.length ? (f7[0].revenue ?? 0).toFixed(2) : "--";
+    if (mNextMonth) mNextMonth.textContent = (data.forecast_next_month ?? 0).toFixed(2);
+  } catch (e) { console.error("KPI update error:", e); }
+
+  // ── Charts ─────────────────────────────────────────────────────────────
+  try { renderForecastChart(data.forecast_next_7 || []); } catch (e) { console.error(e); }
+  try { renderMonthlyChart(data.monthly_sales    || []); } catch (e) { console.error(e); }
+  try { renderHourlyChart(data.hourly_sales      || []); } catch (e) { console.error(e); }
+
+  // ── Cache status badge ─────────────────────────────────────────────────
+  if (fromCache) {
+    _setCacheStatus("fresh", `✓ Cached · ${_timeAgo(cacheTimestamp)} · auto-refresh in 6 h`);
+  } else {
+    _setCacheStatus("live", `✓ Live data · ${new Date().toLocaleTimeString()}`);
+  }
+
+  // Re-enable recalculate button
+  const btn = document.getElementById("recalcBtn");
+  if (btn) { btn.disabled = false; btn.textContent = "↺ Recalculate"; }
+}
+
+async function loadAdvancedAnalytics(forceRefresh = false) {
   const token = requireTokenOrHint();
   if (!token) return;
+
+  // Disable recalculate button while loading
+  const btn = document.getElementById("recalcBtn");
+  if (btn) { btn.disabled = true; btn.textContent = "Loading…"; }
+
+  // Try cache first (unless forced refresh)
+  if (!forceRefresh) {
+    const cached = _getCached();
+    if (cached) {
+      _applyAdvancedData(cached.data, true, cached.timestamp);
+      return;
+    }
+  }
+
+  _setCacheStatus("", "Fetching from server…");
+
   try {
     const res = await fetch(`${BASE_URL}/admin/analytics/advanced`, {
       headers: { Authorization: `Bearer ${token}` },
@@ -131,26 +224,128 @@ async function loadAdvancedAnalytics() {
       window.location.href = "adminAuth.html";
       return;
     }
+    if (!res.ok) {
+      throw new Error(`Server returned ${res.status}`);
+    }
     const data = await res.json();
-    mSlope.textContent = data.sample_count < 2 ? "--" : data.slope.toFixed(2);
-    mR2.textContent = data.sample_count < 2 ? "--" : data.r2.toFixed(2);
-    mLast7.textContent = data.last_7d_revenue.toFixed(2);
-    mLast30.textContent = data.last_30d_revenue.toFixed(2);
-    mMoM.textContent = `${data.mom_growth_pct.toFixed(2)}%`;
-    mNext.textContent = data.forecast_next_7.length
-      ? data.forecast_next_7[0].revenue.toFixed(2)
-      : "--";
-    mNextMonth.textContent = data.forecast_next_month.toFixed(2);
-
-    renderForecastChart(data.forecast_next_7 || []);
-    renderMonthlyChart(data.monthly_sales || []);
-    renderHourlyChart(data.hourly_sales || []);
+    _setCache(data);
+    _applyAdvancedData(data, false, Date.now());
   } catch (err) {
     console.error("Error loading advanced analytics:", err);
+    _setCacheStatus("error", `⚠ Error: ${err.message}`);
+    document.getElementById("equationBox").textContent =
+      `Failed to load regression data. Check that the backend is running.\n\n${err.message}`;
+    if (btn) { btn.disabled = false; btn.textContent = "↺ Retry"; }
     if (err.message.includes("401")) {
       localStorage.removeItem(TOKEN_KEY);
       window.location.href = "adminAuth.html";
     }
+  }
+}
+
+function recalculateAdvanced() {
+  console.log("[Analytics] Recalculate clicked — clearing cache and fetching fresh data");
+  document.getElementById("equationBox").textContent = "Fetching fresh data…";
+  _setCacheStatus("", "Recalculating…");
+  localStorage.removeItem(ADV_CACHE_KEY);
+  loadAdvancedAnalytics(true);
+}
+
+// ── Feature metadata for the regression table ──────────────────────────────
+const FEATURE_META = {
+  day_index:   { desc: "Sequential time index (0 = first day)",       unit: "day" },
+  day_of_week: { desc: "Day of week (0 = Mon, 6 = Sun)",              unit: "integer" },
+  is_weekend:  { desc: "1 if Saturday or Sunday, else 0",             unit: "binary" },
+  month:       { desc: "Calendar month (1 = Jan, 12 = Dec)",          unit: "integer" },
+  is_holiday:  { desc: "1 if Nepali public holiday, else 0",          unit: "binary" },
+};
+
+function coeffInterpretation(name, coeff) {
+  const sign   = coeff >= 0 ? "increases" : "decreases";
+  const absVal = Math.abs(coeff).toFixed(4);
+  switch (name) {
+    case "day_index":
+      return `Revenue ${sign} by Rs. ${absVal} per additional day (trend)`;
+    case "day_of_week":
+      return `Revenue ${sign} by Rs. ${absVal} per unit increase in weekday number`;
+    case "is_weekend":
+      return `Weekend days show Rs. ${absVal} ${sign === "increases" ? "higher" : "lower"} revenue than weekdays`;
+    case "month":
+      return `Revenue ${sign} by Rs. ${absVal} per month (seasonality)`;
+    case "is_holiday":
+      return `Nepali public holidays add Rs. ${Math.abs(coeff).toFixed(4)} to revenue vs normal days`;
+    default:
+      return `Revenue ${sign} by Rs. ${absVal} per unit`;
+  }
+}
+
+function renderRegressionPanel(data) {
+  try {
+  const coefficients = data.coefficients || [];
+  const featureNames = data.feature_names || [];
+  const intercept    = data.multi_intercept ?? 0;
+  const r2           = data.r2 ?? 0;
+  const n            = data.sample_count ?? 0;
+
+  if (n < 2) {
+    document.getElementById("equationBox").textContent =
+      "Not enough data to fit regression (need ≥ 2 days).";
+    return;
+  }
+
+  // ── Build full equation string ─────────────────────────────────────────
+  let eq = `ŷ = ${intercept >= 0 ? "" : ""}${intercept.toFixed(4)}`;
+  featureNames.forEach((name, i) => {
+    const c    = coefficients[i] ?? 0;
+    const sign = c >= 0 ? "+" : "−";
+    eq += `\n    ${sign} ${Math.abs(c).toFixed(4)} · ${name}`;
+  });
+  document.getElementById("equationBox").textContent = eq;
+
+  // ── Meta row (R², n, intercept) ────────────────────────────────────────
+  document.getElementById("regressionMeta").innerHTML = `
+    <div class="regression-meta-item">R² = <span>${r2.toFixed(4)}</span></div>
+    <div class="regression-meta-item">Sample days = <span>${n}</span></div>
+    <div class="regression-meta-item">Intercept (β₀) = <span>${intercept.toFixed(4)}</span></div>
+  `;
+
+  // ── Coefficient table ──────────────────────────────────────────────────
+  const tbody = document.getElementById("coeffTableBody");
+  tbody.innerHTML = "";
+
+  // Intercept row
+  const intRow = document.createElement("tr");
+  intRow.className = "intercept-row";
+  intRow.innerHTML = `
+    <td>—</td>
+    <td>intercept (β₀)</td>
+    <td>Baseline revenue when all features = 0</td>
+    <td class="${intercept >= 0 ? "coeff-positive" : "coeff-negative"}">${intercept.toFixed(4)}</td>
+    <td>Base predicted daily revenue (Rs.)</td>
+  `;
+  tbody.appendChild(intRow);
+
+  // Feature rows
+  featureNames.forEach((name, i) => {
+    const c    = coefficients[i] ?? 0;
+    const meta = FEATURE_META[name] || { desc: name, unit: "" };
+    const cls  = Math.abs(c) < 0.0001 ? "coeff-neutral"
+               : c > 0                ? "coeff-positive"
+               :                        "coeff-negative";
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>f${i}</td>
+      <td><strong>${name}</strong></td>
+      <td>${meta.desc}</td>
+      <td class="${cls}">${c >= 0 ? "+" : ""}${c.toFixed(4)}</td>
+      <td>${coeffInterpretation(name, c)}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+  } catch (err) {
+    console.error("renderRegressionPanel error:", err);
+    const box = document.getElementById("equationBox");
+    if (box) box.textContent = `Render error: ${err.message}`;
   }
 }
 

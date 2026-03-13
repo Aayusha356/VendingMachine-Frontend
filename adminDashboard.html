@@ -43,6 +43,39 @@
 
   <div id="advancedSection" class="advanced-section">
     <h2>Advanced Analytics</h2>
+
+    <!-- Regression Model Panel -->
+    <div class="regression-panel" id="regressionPanel">
+      <div class="regression-panel-header">
+        <h3 class="regression-title">Multiple Linear Regression Model</h3>
+        <div class="regression-cache-bar">
+          <span class="cache-status" id="cacheStatus">Loading…</span>
+          <button class="recalc-btn" id="recalcBtn" onclick="recalculateAdvanced()">
+            ↺ Recalculate
+          </button>
+        </div>
+      </div>
+
+      <div class="regression-equation-box" id="equationBox">Computing…</div>
+
+      <div class="regression-meta" id="regressionMeta"></div>
+
+      <div class="regression-table-wrap">
+        <table class="regression-table" id="coeffTable">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Feature</th>
+              <th>Description</th>
+              <th>Coefficient (β)</th>
+              <th>Interpretation</th>
+            </tr>
+          </thead>
+          <tbody id="coeffTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
     <div class="chart-grid">
       <div class="chart-card">
         <div class="label">7-Day Forecast</div>
@@ -140,6 +173,6 @@
     </table>
   </div>
 
-    <script src="adminDashboard.js"></script>
+    <script src="adminDashboard.js?v=3"></script>
 </body>
 </html>
