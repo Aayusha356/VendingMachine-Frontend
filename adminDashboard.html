@@ -18,13 +18,26 @@
 
   <h1>Products Dashboard</h1>
 
-  
-
   <div class="add-product-container">
   <button class="add-product-btn" onclick="addProduct()">+ Add Product</button>
   <button class="logout-btn" onclick="logout()">Logout</button>
 </div>
 </div>
+
+  <!-- Operational view (Daily) — Critical alerts only -->
+  <section class="ops-section">
+    <h2 class="ops-title">Operational View (Daily)</h2>
+    <div class="ops-critical-wrap">
+      <div class="ops-critical-card">
+        <div class="ops-critical-badge" aria-hidden="true">✓</div>
+        <div class="ops-critical-content">
+          <span class="ops-critical-label">Critical alerts</span>
+          <span class="ops-critical-value" id="critical-alerts-text">None</span>
+          <span class="ops-critical-subtext">All systems healthy</span>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <div class="chart-grid">
     <div class="chart-card">
@@ -46,7 +59,7 @@
 
     <!-- Regression Model Panel -->
     <div class="regression-panel" id="regressionPanel">
-      <div class="regression-panel-header">
+      <!-- <div class="regression-panel-header">
         <h3 class="regression-title">Multiple Linear Regression Model</h3>
         <div class="regression-cache-bar">
           <span class="cache-status" id="cacheStatus">Loading…</span>
@@ -54,33 +67,12 @@
             ↺ Recalculate
           </button>
         </div>
-      </div>
+      </div> -->
 
-      <div class="regression-equation-box" id="equationBox">Computing…</div>
+      <!-- <div class="regression-equation-box" id="equationBox">Computing…</div> -->
 
-      <div class="regression-meta" id="regressionMeta"></div>
-
-      <div class="regression-table-wrap">
-        <table class="regression-table" id="coeffTable">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Feature</th>
-              <th>Description</th>
-              <th>Coefficient (β)</th>
-              <th>Interpretation</th>
-            </tr>
-          </thead>
-          <tbody id="coeffTableBody"></tbody>
-        </table>
-      </div>
-
-      <!-- Visual feature impact chart -->
-      <div class="regression-feature-chart-card">
-        <div class="label">Feature Impact on Daily Revenue</div>
-        <canvas id="regFeatureChart"></canvas>
-      </div>
-    </div>
+      <!-- <div class="regression-meta" id="regressionMeta"></div> -->
+    <!-- </div> -->
 
     <div class="chart-grid">
       <div class="chart-card">
@@ -97,6 +89,7 @@
       </div>
     </div>
   </div>
+  
 
   <!-- <div class="nav-section">
     <button class="nav-btn" onclick="showMoreAnalytics()">View Advanced Analytics ↓</button>

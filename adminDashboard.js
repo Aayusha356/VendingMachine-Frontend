@@ -10,6 +10,9 @@ if (!token) {
 const tableBody = document.getElementById("productTableBody");
 const authHint = document.getElementById("auth-hint");
 
+// Operational view — critical alerts
+const criticalAlertsEl = document.getElementById("critical-alerts-text");
+
 const mTotal = document.getElementById("m-total");
 const mPaid = document.getElementById("m-paid");
 const mPending = document.getElementById("m-pending");
@@ -30,7 +33,6 @@ let topChart;
 let forecastChart;
 let monthlyChart;
 let hourlyChart;
-let regFeatureChart;
 
 function getToken() {
   return localStorage.getItem(TOKEN_KEY);
@@ -68,6 +70,10 @@ async function loadProducts() {
 
       tableBody.appendChild(tr);
     });
+
+    if (criticalAlertsEl) {
+      criticalAlertsEl.textContent = "None";
+    }
   } catch (error) {
     console.error("Error loading products:", error);
   }
@@ -310,106 +316,6 @@ function renderRegressionPanel(data) {
     <div class="regression-meta-item">Intercept (β₀) = <span>${intercept.toFixed(4)}</span></div>
   `;
 
-  // ── Coefficient table ──────────────────────────────────────────────────
-  const tbody = document.getElementById("coeffTableBody");
-  tbody.innerHTML = "";
-
-  // Intercept row
-  const intRow = document.createElement("tr");
-  intRow.className = "intercept-row";
-  intRow.innerHTML = `
-    <td>—</td>
-    <td>intercept (β₀)</td>
-    <td>Baseline revenue when all features = 0</td>
-    <td class="${intercept >= 0 ? "coeff-positive" : "coeff-negative"}">${intercept.toFixed(4)}</td>
-    <td>Base predicted daily revenue (Rs.)</td>
-  `;
-  tbody.appendChild(intRow);
-
-  // Feature rows
-  featureNames.forEach((name, i) => {
-    const c    = coefficients[i] ?? 0;
-    const meta = FEATURE_META[name] || { desc: name, unit: "" };
-    const cls  = Math.abs(c) < 0.0001 ? "coeff-neutral"
-               : c > 0                ? "coeff-positive"
-               :                        "coeff-negative";
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>f${i}</td>
-      <td><strong>${name}</strong></td>
-      <td>${meta.desc}</td>
-      <td class="${cls}">${c >= 0 ? "+" : ""}${c.toFixed(4)}</td>
-      <td>${coeffInterpretation(name, c)}</td>
-    `;
-    tbody.appendChild(tr);
-  });
-
-  // ── Feature impact chart (bar) ─────────────────────────────────────────
-  try {
-    const ctx = document.getElementById("regFeatureChart");
-    if (ctx) {
-      const labels = featureNames.map((name) => name);
-      const values = featureNames.map((name, i) => coefficients[i] ?? 0);
-      const bgColors = values.map((v) =>
-        Math.abs(v) < 0.0001
-          ? "rgba(148,163,184,0.5)" // neutral
-          : v > 0
-          ? "rgba(34,197,94,0.7)"   // positive
-          : "rgba(248,113,113,0.75)" // negative
-      );
-
-      if (regFeatureChart) regFeatureChart.destroy();
-
-      regFeatureChart = new Chart(ctx, {
-        type: "bar",
-        data: {
-          labels,
-          datasets: [
-            {
-              label: "β coefficient (Rs impact per unit)",
-              data: values,
-              backgroundColor: bgColors,
-              borderColor: "#111827",
-              borderWidth: 1,
-              maxBarThickness: 40,
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              display: false,
-            },
-            tooltip: {
-              callbacks: {
-                label: (ctx) => {
-                  const v = ctx.parsed.y;
-                  return `β = ${v.toFixed(4)} (Rs / unit)`;
-                },
-              },
-            },
-          },
-          scales: {
-            x: {
-              ticks: { color: "#1f2937" },
-            },
-            y: {
-              ticks: { color: "#1f2937" },
-              title: {
-                display: true,
-                text: "Coefficient β (Rs change per unit)",
-                color: "#1f2937",
-              },
-            },
-          },
-        },
-      });
-    }
-  } catch (e) {
-    console.error("regFeatureChart error:", e);
-  }
   } catch (err) {
     console.error("renderRegressionPanel error:", err);
     const box = document.getElementById("equationBox");
