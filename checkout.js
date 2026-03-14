@@ -1,4 +1,9 @@
-const BASE_URL ="http://172.16.29.221:8000";
+// Backend API used by this browser (WSL → host)
+const BASE_URL = "http://127.0.0.1:8000";
+// URL that goes inside the QR code (must be reachable from the PHONE)
+// If your phone is on the same Wi‑Fi as the laptop, this should be the
+// laptop's LAN IP; update it if your IP changes.
+const QR_BASE_URL = "http://172.16.29.221:8000";
 
 let orderId = null;
 const params = new URLSearchParams(window.location.search);
@@ -46,7 +51,7 @@ async function initCheckout() {
 }
 
 function generateQRCode(orderId) {
-  const qrData = `${BASE_URL}/payment/scan/${orderId}`;
+  const qrData = `${QR_BASE_URL}/payment/scan/${orderId}`;
   const qrImg = document.getElementById("qr-img");
   const finalURL = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(qrData)}`;
   qrImg.src = finalURL;

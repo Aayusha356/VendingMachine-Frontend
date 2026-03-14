@@ -1,4 +1,6 @@
 let products = [];
+// Backend API base URL (FastAPI running in WSL)
+// This should match how you call the API from the browser.
 const BASE_URL = "http://127.0.0.1:8000";
 const WEATHER_API_KEY = "c75ea9264be52e6fba406ca8b0e2146f";
 const WEATHER_CITY = "Kathmandu"; 
@@ -88,7 +90,7 @@ async function fetchProductsOnly() {
   const grid = document.getElementById("productGrid");
 
   try {
-    const res = await fetch(`${BASE_URL}/products/`);
+    const res = await fetch(`${BASE_URL}/products/available`);
     if (!res.ok) throw new Error("Unable to fetch products");
     const data = await res.json();
 

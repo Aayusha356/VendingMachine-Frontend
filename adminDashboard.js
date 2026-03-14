@@ -12,6 +12,12 @@ const authHint = document.getElementById("auth-hint");
 
 // Operational view — critical alerts
 const criticalAlertsEl = document.getElementById("critical-alerts-text");
+const criticalSubtextEl = document.getElementById("critical-subtext");
+const outOfStockListEl = document.getElementById("out-of-stock-list");
+
+function titleCase(str) {
+  return (str || "").toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+}
 
 const mTotal = document.getElementById("m-total");
 const mPaid = document.getElementById("m-paid");
@@ -71,8 +77,36 @@ async function loadProducts() {
       tableBody.appendChild(tr);
     });
 
-    if (criticalAlertsEl) {
-      criticalAlertsEl.textContent = "None";
+    // Critical analytics: show out-of-stock products to owner
+    if (criticalAlertsEl && criticalSubtextEl && outOfStockListEl) {
+      const outOfStock = products.filter((p) => (p.quantity ?? 0) <= 0);
+      outOfStockListEl.innerHTML = "";
+
+      if (!outOfStock.length) {
+        criticalAlertsEl.textContent = "None";
+        criticalSubtextEl.textContent = "All systems healthy";
+        document
+          .querySelector(".ops-critical-card")
+          ?.classList.remove("has-alert");
+        const badge = document.querySelector(".ops-critical-badge");
+        if (badge) badge.textContent = "✓";
+      } else {
+        const names = outOfStock.map((p) => titleCase(p.name)).join(", ");
+        criticalAlertsEl.textContent = `${outOfStock.length} product${outOfStock.length > 1 ? "s" : ""} out of stock`;
+        criticalSubtextEl.textContent = `Restock these items: ${names}`;
+
+        outOfStock.forEach((p) => {
+          const li = document.createElement("li");
+          li.textContent = titleCase(p.name);
+          outOfStockListEl.appendChild(li);
+        });
+
+        document
+          .querySelector(".ops-critical-card")
+          ?.classList.add("has-alert");
+        const badge = document.querySelector(".ops-critical-badge");
+        if (badge) badge.textContent = "✕";
+      }
     }
   } catch (error) {
     console.error("Error loading products:", error);
