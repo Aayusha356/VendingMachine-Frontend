@@ -462,10 +462,26 @@ function renderRevenueChart(rows) {
 function renderCategoryChart(rows) {
   const ctx = document.getElementById("catChart");
   if (!ctx) return;
-  const labels = rows.map((r) => r.category || "Uncategorized");
-  const values = rows.map((r) => r.total_revenue);
+  const list = Array.isArray(rows) ? rows : [];
+  const labels = list.map((r) => r.category || "Uncategorized");
+  const values = list.map((r) => (r.total_revenue != null ? r.total_revenue : 0));
 
   if (catChart) catChart.destroy();
+
+  if (labels.length === 0) {
+    catChart = new Chart(ctx, {
+      type: "doughnut",
+      data: {
+        labels: ["No data yet"],
+        datasets: [{ data: [1], backgroundColor: ["#e5e7eb"], borderWidth: 0 }],
+      },
+      options: {
+        plugins: { legend: { display: true, position: "right" } },
+        tooltip: { callbacks: { label: () => "No category sales yet" } },
+      },
+    });
+    return;
+  }
 
   catChart = new Chart(ctx, {
     type: "doughnut",
