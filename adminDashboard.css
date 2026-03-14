@@ -344,19 +344,47 @@ img {
   color: #f25b3c;
 }
 
+.regression-feature-chart-card {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px dashed rgba(0,0,0,0.12);
+}
+
+.regression-feature-chart-card .label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #4b5563;
+  margin-bottom: 8px;
+}
+
+.regression-feature-chart-card canvas {
+  width: 100% !important;
+  height: 220px !important; /* fixed, prevents growing */
+}
+
 .regression-table-wrap {
   overflow-x: auto;
 }
 
 .regression-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   font-size: 13px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(15,23,42,0.04);
+}
+
+.regression-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
 .regression-table th {
-  background: rgba(242,91,60,0.08);
-  color: #d97b65;
+  background: linear-gradient(90deg, rgba(242,91,60,0.12), rgba(251,146,60,0.12));
+  color: #b45326;
   padding: 10px 14px;
   text-align: left;
   font-weight: 600;
@@ -365,9 +393,13 @@ img {
 
 .regression-table td {
   padding: 9px 14px;
-  border-bottom: 1px solid rgba(0,0,0,0.05);
+  border-bottom: 1px solid rgba(0,0,0,0.04);
   color: #1f2937;
   vertical-align: middle;
+}
+
+.regression-table tbody tr:nth-child(even) td {
+  background: rgba(249,250,251,0.9);
 }
 
 .regression-table tr:last-child td {

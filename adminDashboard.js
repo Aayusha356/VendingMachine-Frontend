@@ -30,6 +30,7 @@ let topChart;
 let forecastChart;
 let monthlyChart;
 let hourlyChart;
+let regFeatureChart;
 
 function getToken() {
   return localStorage.getItem(TOKEN_KEY);
@@ -342,6 +343,73 @@ function renderRegressionPanel(data) {
     `;
     tbody.appendChild(tr);
   });
+
+  // ── Feature impact chart (bar) ─────────────────────────────────────────
+  try {
+    const ctx = document.getElementById("regFeatureChart");
+    if (ctx) {
+      const labels = featureNames.map((name) => name);
+      const values = featureNames.map((name, i) => coefficients[i] ?? 0);
+      const bgColors = values.map((v) =>
+        Math.abs(v) < 0.0001
+          ? "rgba(148,163,184,0.5)" // neutral
+          : v > 0
+          ? "rgba(34,197,94,0.7)"   // positive
+          : "rgba(248,113,113,0.75)" // negative
+      );
+
+      if (regFeatureChart) regFeatureChart.destroy();
+
+      regFeatureChart = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels,
+          datasets: [
+            {
+              label: "β coefficient (Rs impact per unit)",
+              data: values,
+              backgroundColor: bgColors,
+              borderColor: "#111827",
+              borderWidth: 1,
+              maxBarThickness: 40,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false,
+            },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => {
+                  const v = ctx.parsed.y;
+                  return `β = ${v.toFixed(4)} (Rs / unit)`;
+                },
+              },
+            },
+          },
+          scales: {
+            x: {
+              ticks: { color: "#1f2937" },
+            },
+            y: {
+              ticks: { color: "#1f2937" },
+              title: {
+                display: true,
+                text: "Coefficient β (Rs change per unit)",
+                color: "#1f2937",
+              },
+            },
+          },
+        },
+      });
+    }
+  } catch (e) {
+    console.error("regFeatureChart error:", e);
+  }
   } catch (err) {
     console.error("renderRegressionPanel error:", err);
     const box = document.getElementById("equationBox");
