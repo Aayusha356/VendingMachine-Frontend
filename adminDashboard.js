@@ -19,6 +19,37 @@ function titleCase(str) {
   return (str || "").toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
+async function restockProduct(productId, buttonEl, fromOps = false) {
+  try {
+    const container = fromOps ? buttonEl.closest("li") : buttonEl.closest("td");
+    const input = container.querySelector(fromOps ? ".ops-restock-input" : ".restock-input");
+    const raw = Number(input.value) || 0;
+    const qtyDelta = Math.max(raw, 1);
+    input.value = qtyDelta;
+
+    buttonEl.disabled = true;
+    buttonEl.textContent = "Saving...";
+
+    const res = await fetch(`${BASE_URL}/products/${productId}/restock`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ quantity_delta: qtyDelta }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || "Failed to restock");
+    }
+
+    await loadProducts();
+  } catch (e) {
+    console.error("restockProduct error:", e);
+    alert(e.message || "Failed to restock");
+  } finally {
+    buttonEl.disabled = false;
+    buttonEl.textContent = "Restock";
+  }
+}
+
 const mTotal = document.getElementById("m-total");
 const mPaid = document.getElementById("m-paid");
 const mPending = document.getElementById("m-pending");
@@ -68,9 +99,14 @@ async function loadProducts() {
         <td>${product.name}</td>
         <td>${product.category}</td>
         <td>Rs. ${Number(product.price).toFixed(2)}</td>
+        <td>${product.quantity ?? 0}</td>
         <td class="action-buttons">
           <button class="btn edit-btn" onclick="editProduct('${product.id}')">Edit</button>
           <button class="btn delete-btn" onclick="deleteProduct('${product.id}')">Delete</button>
+          <div class="restock-inline">
+            <input type="number" min="1" value="1" class="restock-input" data-product-id="${product.id}">
+            <button class="btn restock-btn" onclick="restockProduct(${product.id}, this)">Restock</button>
+          </div>
         </td>
       `;
 
@@ -97,7 +133,11 @@ async function loadProducts() {
 
         outOfStock.forEach((p) => {
           const li = document.createElement("li");
-          li.textContent = titleCase(p.name);
+          li.innerHTML = `
+            <span class="ops-outofstock-name">${titleCase(p.name)}</span>
+            <input type="number" min="1" value="1" class="ops-restock-input" data-product-id="${p.id}">
+            <button class="ops-restock-btn" onclick="restockProduct(${p.id}, this, true)">Restock</button>
+          `;
           outOfStockListEl.appendChild(li);
         });
 
@@ -274,8 +314,11 @@ async function loadAdvancedAnalytics(forceRefresh = false) {
   } catch (err) {
     console.error("Error loading advanced analytics:", err);
     _setCacheStatus("error", `⚠ Error: ${err.message}`);
-    document.getElementById("equationBox").textContent =
-      `Failed to load regression data. Check that the backend is running.\n\n${err.message}`;
+    const box = document.getElementById("equationBox");
+    if (box) {
+      box.textContent =
+        `Failed to load regression data. Check that the backend is running.\n\n${err.message}`;
+    }
     if (btn) { btn.disabled = false; btn.textContent = "↺ Retry"; }
     if (err.message.includes("401")) {
       localStorage.removeItem(TOKEN_KEY);
@@ -286,7 +329,8 @@ async function loadAdvancedAnalytics(forceRefresh = false) {
 
 function recalculateAdvanced() {
   console.log("[Analytics] Recalculate clicked — clearing cache and fetching fresh data");
-  document.getElementById("equationBox").textContent = "Fetching fresh data…";
+  const box = document.getElementById("equationBox");
+  if (box) box.textContent = "Fetching fresh data…";
   _setCacheStatus("", "Recalculating…");
   localStorage.removeItem(ADV_CACHE_KEY);
   loadAdvancedAnalytics(true);
@@ -328,9 +372,15 @@ function renderRegressionPanel(data) {
   const r2           = data.r2 ?? 0;
   const n            = data.sample_count ?? 0;
 
+  const eqBox   = document.getElementById("equationBox");
+  const metaBox = document.getElementById("regressionMeta");
+  if (!eqBox || !metaBox) {
+    // Older HTML without regression panel – safely no-op
+    return;
+  }
+
   if (n < 2) {
-    document.getElementById("equationBox").textContent =
-      "Not enough data to fit regression (need ≥ 2 days).";
+    eqBox.textContent = "Not enough data to fit regression (need ≥ 2 days).";
     return;
   }
 
@@ -341,10 +391,10 @@ function renderRegressionPanel(data) {
     const sign = c >= 0 ? "+" : "−";
     eq += `\n    ${sign} ${Math.abs(c).toFixed(4)} · ${name}`;
   });
-  document.getElementById("equationBox").textContent = eq;
+  eqBox.textContent = eq;
 
   // ── Meta row (R², n, intercept) ────────────────────────────────────────
-  document.getElementById("regressionMeta").innerHTML = `
+  metaBox.innerHTML = `
     <div class="regression-meta-item">R² = <span>${r2.toFixed(4)}</span></div>
     <div class="regression-meta-item">Sample days = <span>${n}</span></div>
     <div class="regression-meta-item">Intercept (β₀) = <span>${intercept.toFixed(4)}</span></div>

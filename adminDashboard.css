@@ -306,12 +306,57 @@ img {
 
 .ops-outofstock-list li {
   list-style: none;
-  padding: 4px 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
   border-radius: 999px;
-  background: rgba(239, 68, 68, 0.1);
+  background: rgba(239, 68, 68, 0.08);
   border: 1px solid rgba(239, 68, 68, 0.6);
   color: #b91c1c;
   font-weight: 600;
+}
+
+.ops-outofstock-name {
+  padding: 2px 4px;
+}
+
+.ops-restock-input {
+  width: 60px;
+  padding: 3px 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(0,0,0,0.1);
+  font-size: 12px;
+}
+
+.ops-restock-btn {
+  background: #b91c1c;
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 4px 8px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.restock-inline {
+  margin-top: 6px;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.restock-input {
+  width: 60px;
+  padding: 3px 6px;
+  border-radius: 6px;
+  border: 1px solid rgba(0,0,0,0.12);
+  font-size: 12px;
+}
+
+.restock-btn {
+  font-size: 11px;
+  padding: 4px 8px;
 }
 
 /* When there ARE critical alerts, make the card more urgent */
