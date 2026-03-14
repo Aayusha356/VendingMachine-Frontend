@@ -1,11 +1,8 @@
-// Backend API used by this browser (WSL → host)
+// Backend API used by this browser
 const BASE_URL = "http://127.0.0.1:8002";
-// URL that goes inside the QR code (must be reachable from the PHONE)
-// If your phone is on the same Wi‑Fi as the laptop, this should be the
-// laptop's LAN IP; update it if your IP changes.
-const QR_BASE_URL = "http://192.168.1.69:8002";
 
 let orderId = null;
+let qrBaseUrl = null;  // Fetched from backend (LAN IP for phone)
 const params = new URLSearchParams(window.location.search);
 const productId = Number(params.get("productId"));
 
@@ -16,6 +13,11 @@ async function initCheckout() {
   }
 
   try {
+    const configRes = await fetch(`${BASE_URL}/api/qr-base-url`);
+    if (!configRes.ok) throw new Error("Could not get server config");
+    const config = await configRes.json();
+    qrBaseUrl = config.qr_base_url;
+
     const productRes = await fetch(`${BASE_URL}/products/${productId}`);
     if (!productRes.ok) throw new Error("Unable to load product details");
     const product = await productRes.json();
@@ -51,7 +53,7 @@ async function initCheckout() {
 }
 
 function generateQRCode(orderId) {
-  const qrData = `${QR_BASE_URL}/payment/scan/${orderId}`;
+  const qrData = `${qrBaseUrl}/payment/scan/${orderId}`;
   const qrImg = document.getElementById("qr-img");
   const finalURL = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(qrData)}`;
   qrImg.src = finalURL;
