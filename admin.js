@@ -13,7 +13,7 @@ document.getElementById("productForm").addEventListener("submit", async function
     const formData = new FormData();
     formData.append("file", imageFile);
 
-    const imageRes = await fetch("http://127.0.0.1:8000/upload_image/", {
+    const imageRes = await fetch("http://127.0.0.1:8002/upload_image/", {
       method: "POST",
       body: formData,
     });
@@ -32,7 +32,7 @@ document.getElementById("productForm").addEventListener("submit", async function
       image: filename // Pass only the path from backend
     };
 
-    const productRes = await fetch("http://127.0.0.1:8000/products/", {
+    const productRes = await fetch("http://127.0.0.1:8002/products/", {
       method: "POST",
       headers: {
         accept: "application/json",

@@ -1,4 +1,4 @@
-const BASE_URL = "http://127.0.0.1:8000";
+const BASE_URL = "http://127.0.0.1:8002";
 
 // Get ID from query string
 const params = new URLSearchParams(window.location.search);

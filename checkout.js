@@ -1,9 +1,9 @@
 // Backend API used by this browser (WSL → host)
-// const BASE_URL = "http://127.0.0.1:8000";
+const BASE_URL = "http://127.0.0.1:8002";
 // URL that goes inside the QR code (must be reachable from the PHONE)
 // If your phone is on the same Wi‑Fi as the laptop, this should be the
 // laptop's LAN IP; update it if your IP changes.
-const QR_BASE_URL = "http://192.168.18.23:8000";
+const QR_BASE_URL = "http://192.168.1.69:8002";
 
 let orderId = null;
 const params = new URLSearchParams(window.location.search);

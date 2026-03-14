@@ -1,7 +1,7 @@
 let products = [];
 // Backend API base URL (FastAPI running in WSL)
 // This should match how you call the API from the browser.
-const BASE_URL = "http://127.0.0.1:8000";
+const BASE_URL = "http://127.0.0.1:8002";
 const WEATHER_API_KEY = "c75ea9264be52e6fba406ca8b0e2146f";
 const WEATHER_CITY = "Kathmandu"; 
 const HOT_THRESHOLD = 10; 
