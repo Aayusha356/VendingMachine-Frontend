@@ -186,20 +186,14 @@ function loadProducts(category = "all") {
         <span class="pill">${product.category || "item"}</span>
         <span class="price">Rs. ${product.price}</span>
       </div>
-      <div class="qty-wrap">
-        <label for="qty-${product.id}">Qty</label>
-        <input type="number" id="qty-${product.id}" class="qty-input" value="1" min="1" max="50">
-      </div>
       <button class="primary-btn" aria-label="Buy ${product.name}">
         <i class="fas fa-qrcode"></i> Buy Now
       </button>
     `;
     const buyBtn = card.querySelector("button");
-    const qtyInput = card.querySelector(".qty-input");
     buyBtn.addEventListener("click", () => {
-      const qtyVal = Math.min(Math.max(Number(qtyInput.value) || 1, 1), 50);
-      qtyInput.value = qtyVal;
-      startCheckout(product.id, qtyVal);
+      // Vending machine dispenses one item per transaction
+      startCheckout(product.id);
     });
     grid.appendChild(card);
   });
@@ -219,8 +213,8 @@ function capitalise(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-function startCheckout(productId, qty = 1) {
-  window.location.href = `checkout.html?productId=${productId}&qty=${qty}`;
+function startCheckout(productId) {
+  window.location.href = `checkout.html?productId=${productId}`;
 }
 
 function showNotification(message) {

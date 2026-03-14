@@ -3,7 +3,6 @@ const BASE_URL ="http://172.16.29.221:8000";
 let orderId = null;
 const params = new URLSearchParams(window.location.search);
 const productId = Number(params.get("productId"));
-const quantity = Number(params.get("qty") || 1);
 
 async function initCheckout() {
   if (!productId) {
@@ -16,7 +15,8 @@ async function initCheckout() {
     if (!productRes.ok) throw new Error("Unable to load product details");
     const product = await productRes.json();
 
-    const qty = Number.isFinite(quantity) && quantity > 0 ? quantity : 1;
+    // Vending machine dispenses exactly one item per transaction
+    const qty = 1;
     const total = Number(product.price) * qty;
     document.getElementById("product-name").textContent = product.name;
     document.getElementById("amount").textContent = `Nrs. ${total}`;
